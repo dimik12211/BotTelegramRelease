@@ -17,23 +17,23 @@ public class Keyboard {
             ArrayList<KeyboardRow> keyboardRows = new ArrayList<>();
 
             KeyboardRow keyboardRow = new KeyboardRow();
-            keyboardRow.add(new KeyboardButton("Создать тренировку"));
+            keyboardRow.add(new KeyboardButton("Создать тренировку"));//
             keyboardRows.add(keyboardRow);
 
             KeyboardRow keyboardRow2 = new KeyboardRow();
-            keyboardRow2.add(new KeyboardButton("Посмотреть сохраненные тренировки"));
+            keyboardRow2.add(new KeyboardButton("Посмотреть сохраненные тренировки"));//
             keyboardRows.add(keyboardRow2);
 
             KeyboardRow keyboardRow3 = new KeyboardRow();
-            keyboardRow3.add(new KeyboardButton("Провести тренировку"));
+            keyboardRow3.add(new KeyboardButton("Провести тренировку"));//
             keyboardRows.add(keyboardRow3);
 
             KeyboardRow keyboardRow4 = new KeyboardRow();
-            keyboardRow4.add(new KeyboardButton("Назначить тренировку пользователю"));
+            keyboardRow4.add(new KeyboardButton("Назначить тренировку пользователю"));//
             keyboardRows.add(keyboardRow4);
 
             KeyboardRow keyboardRow5 = new KeyboardRow();
-            keyboardRow5.add(new KeyboardButton("Изменить статус активности"));
+            keyboardRow5.add(new KeyboardButton("Изменить статус активности"));//
             keyboardRows.add(keyboardRow5);
 
             KeyboardRow keyboardRow6 = new KeyboardRow();
@@ -41,12 +41,16 @@ public class Keyboard {
             keyboardRows.add(keyboardRow6);
 
             KeyboardRow keyboardRow7 = new KeyboardRow();
-            keyboardRow7.add(new KeyboardButton("Добавить пользователя в свою группу"));
+            keyboardRow7.add(new KeyboardButton("Добавить пользователя в свою группу"));//
             keyboardRows.add(keyboardRow7);
 
             KeyboardRow keyboardRow8 = new KeyboardRow();
-            keyboardRow8.add(new KeyboardButton("Посмотреть статистику тренировок"));
+            keyboardRow8.add(new KeyboardButton("Посмотреть статистику тренировок"));//+-
             keyboardRows.add(keyboardRow8);
+
+            KeyboardRow keyboardRow9 = new KeyboardRow();
+            keyboardRow9.add(new KeyboardButton("Добавить пояснение к упражнению"));
+            keyboardRows.add(keyboardRow9);
 
             replyKeyboardMarkup.setKeyboard(keyboardRows);
             return replyKeyboardMarkup;

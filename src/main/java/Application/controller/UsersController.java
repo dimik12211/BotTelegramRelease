@@ -19,6 +19,41 @@ import java.util.Objects;
 
 @Controller
 public class UsersController {
+
+    public String controllerAddUserInGroup(String chatIdTrener, String chatId){
+        try {
+            HttpPost httpPost = new HttpPost("http://localhost:8080/AddUserInGroup");
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("chatIdTrener", chatIdTrener));
+            params.add(new BasicNameValuePair("chatId", chatId));
+            httpPost.setEntity(new UrlEncodedFormEntity(params));
+            CloseableHttpClient client = HttpClients.createDefault();
+            CloseableHttpResponse response = client.execute(httpPost);
+            HttpEntity entity = response.getEntity();
+            String returnText = EntityUtils.toString(entity);
+            return returnText;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
+    }
+
+    public boolean controllerFindIsTrener(String chatId){
+        try {
+            HttpPost httpPost = new HttpPost("http://localhost:8080/FindIsTrener");
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("chatId", chatId));
+            httpPost.setEntity(new UrlEncodedFormEntity(params));
+            CloseableHttpClient client = HttpClients.createDefault();
+            CloseableHttpResponse response = client.execute(httpPost);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+            return Objects.equals(bufferedReader.readLine(), "true");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public String controllerFindUsers(String chatId) {
         try {
             HttpPost httpPost = new HttpPost("http://localhost:8080/FindUsers");
@@ -29,6 +64,22 @@ public class UsersController {
             CloseableHttpResponse response = client.execute(httpPost);
             HttpEntity entity = response.getEntity();
             //String returnText = bufferedReader.readLine();
+            String returnText = EntityUtils.toString(entity);
+            return returnText;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Ошибка при запросе возможных пользователей для назначения тренировки" + e.getMessage();
+        }
+    }
+    public String controllerFindAllUsersAddGroup(String chatId) {
+        try {
+            HttpPost httpPost = new HttpPost("http://localhost:8080/FindAllUsersAddGroup");
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("chatId", chatId));
+            httpPost.setEntity(new UrlEncodedFormEntity(params));
+            CloseableHttpClient client = HttpClients.createDefault();
+            CloseableHttpResponse response = client.execute(httpPost);
+            HttpEntity entity = response.getEntity();
             String returnText = EntityUtils.toString(entity);
             return returnText;
         } catch (Exception e) {

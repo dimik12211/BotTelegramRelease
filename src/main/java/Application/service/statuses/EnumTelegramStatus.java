@@ -30,5 +30,11 @@ public enum EnumTelegramStatus {
 
     AssignmentWorkoutEnd,
 
+    AddUsersInGroup,
+
+    AddExercisePictureName,
+
+    AddExercisePicture,
+
     SearchExercisePicture,
 }

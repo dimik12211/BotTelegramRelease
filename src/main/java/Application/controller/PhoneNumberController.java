@@ -27,7 +27,8 @@ public class PhoneNumberController {
             CloseableHttpClient client = HttpClients.createDefault();
             CloseableHttpResponse response = client.execute(httpPost);
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-            return bufferedReader.readLine().equals("true");
+            boolean phone = bufferedReader.readLine().equals("true");
+            return phone;
         } catch (Exception e) {
             e.printStackTrace();
             return false;

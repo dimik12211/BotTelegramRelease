@@ -25,7 +25,11 @@ public class UserStatus {
         return userStatusMap.containsKey(chatId);
     }
 
-    public String getUserStatusMap(String chatId){
-        return userStatusMap.get(chatId).name();
+    public String getUserStatusMap(String chatId) {
+        try {
+            return userStatusMap.get(chatId).name();
+        } catch (NullPointerException nullPointerException) {
+            return "false";
+        }
     }
 }

@@ -20,6 +20,23 @@ import java.util.Objects;
 @Controller
 public class WorkoutController {
 
+    public String controllerGetStatistic(String chatId) {
+        try {
+            HttpPost httpPost = new HttpPost("http://localhost:8080/GetStatistic");
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("chatId", chatId));
+            httpPost.setEntity(new UrlEncodedFormEntity(params));
+            CloseableHttpClient client = HttpClients.createDefault();
+            CloseableHttpResponse response = client.execute(httpPost);
+            HttpEntity entity = response.getEntity();
+            String returnText = EntityUtils.toString(entity);
+            return returnText;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Ошибка запроса в сервис БД. " + e.getMessage();
+        }
+    }
+
     public boolean controllerSaveWorkout(String chatId, String workoutJson) {
         try {
             HttpPost httpPost = new HttpPost("http://localhost:8080/SaveWorkout");

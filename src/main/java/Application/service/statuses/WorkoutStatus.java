@@ -78,6 +78,16 @@ public class WorkoutStatus {
         }
     }
 
+    public String deleteReplyKeyboardMarkupMap(String chatId) {
+        try {
+            chatIdReplyKeyboardMarkup.remove(chatId);
+            return "true";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
+    }
+
     public boolean isReplyKeyboardMarkupMap(String chatId) {
         return chatIdReplyKeyboardMarkup.containsKey(chatId);
     }

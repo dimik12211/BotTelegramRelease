@@ -5,19 +5,19 @@ import Application.controller.UsersController;
 import Application.controller.WorkoutController;
 import Application.gui.Keyboard;
 import Application.gui.KeyboardEndWorkout;
+import Application.gui.KeyboardUsers;
+import Application.model.Exercises;
 import Application.model.Workout;
-import Application.service.statuses.AssignmentWorkoutStatus;
-import Application.service.statuses.EnumTelegramStatus;
-import Application.service.statuses.UserStatus;
-import Application.service.statuses.WorkoutStatus;
+import Application.service.statuses.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
-import javax.persistence.Column;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,6 +34,9 @@ public class ParseMessageBot {
     private AssignmentWorkoutStatus assignmentWorkoutStatus;
 
     @Autowired
+    private ExercisesStatus exercisesStatus;
+
+    @Autowired
     private WorkoutController workoutController;
 
     @Autowired
@@ -42,7 +45,9 @@ public class ParseMessageBot {
     @Autowired
     private ExercisesController exercisesController;
 
-    private Keyboard keyboard = new Keyboard();
+    private KeyboardUsers keyboard = new KeyboardUsers();
+
+    private Keyboard keyboardTrener = new Keyboard();
 
     private KeyboardEndWorkout keyboardEndWorkout = new KeyboardEndWorkout();
 
@@ -82,12 +87,25 @@ public class ParseMessageBot {
             }
             return returnText;
         } else if ((message.equals("/get5")) || message.equals("Показать пояснение к упражнению")) {
-            exercisesController
-            returnText = "К какому упражнению показать поясняющие изображения (укажите номер упражнениия):\n";
+            String exercisess = exercisesController.controllerFindAllExercises();
+            returnText = "К какому упражнению показать поясняющие изображения (укажите номер упражнениия):\n" + exercisess + "\n";
             userStatus.saveUserStatusMap(chatId, EnumTelegramStatus.SearchExercisePicture);
             return returnText;
+        } else if ((message.equals("/get6")) || message.equals("Добавить пояснение к упражнению")) {
+            returnText = "Введите наименование упражнения.";
+            userStatus.saveUserStatusMap(chatId, EnumTelegramStatus.AddExercisePictureName);
+            return returnText;
+        } else if ((message.equals("/get7")) || message.equals("Добавить пользователя в свою группу")) {
+            String users = usersController.controllerFindAllUsersAddGroup(chatId);
+            returnText = "Какого пользователя добавить в своб группу (укажите номер пользователя): \n" + users;
+            userStatus.saveUserStatusMap(chatId, EnumTelegramStatus.AddUsersInGroup);
+            return returnText;
+        } else if ((message.equals("/get8")) || message.equals("Посмотреть статистику тренировок")) {
+            String statistic = workoutController.controllerGetStatistic(chatId);
+            returnText = "Статистика тренировок: " + statistic;
+            return returnText;
         }
-        workoutStatus.saveReplyKeyboardMarkupMap(chatId, keyboard.getKeyboard());
+        workoutStatus.deleteReplyKeyboardMarkupMap(chatId);
         return "Ошибка, недопустимый аргумент.\nВыберите действие из вариантов ниже";
     }
 
@@ -106,17 +124,17 @@ public class ParseMessageBot {
                 userStatus.saveUserStatusMap(chatId, EnumTelegramStatus.WorkoutQuantity);
                 break;
             case ("WorkoutQuantity"):
-                returnText = "Укажите коментарий №1: \n";
+                returnText = "Укажите комментарий №1: \n";
                 workoutStatus.getUserStatusMap(chatId).setQuantity(message);
                 userStatus.saveUserStatusMap(chatId, EnumTelegramStatus.WorkoutComment);
                 break;
             case ("WorkoutComment"):
-                returnText = "Укажите коментарий №2: \n";
+                returnText = "Укажите комментарий №2: \n";
                 workoutStatus.getUserStatusMap(chatId).setComment(message);
                 userStatus.saveUserStatusMap(chatId, EnumTelegramStatus.WorkoutRingWork);
                 break;
             case ("WorkoutRingWork"):
-                returnText = "Укажите коментарий №3: \n";
+                returnText = "Укажите комментарий №3: \n";
                 workoutStatus.getUserStatusMap(chatId).setRingWork(message);
                 userStatus.saveUserStatusMap(chatId, EnumTelegramStatus.WorkoutComment2);
                 break;
@@ -136,9 +154,9 @@ public class ParseMessageBot {
                         String.format(format, "Наименование: ", workout.getName()) + "\n" +
                         String.format(format, "Количество повторений: ", workout.getRepetitions()) + "\n" +
                         String.format(format, "Количество подходов: ", workout.getQuantity()) + "\n" +
-                        String.format(format, "Коментарий №1: ", workout.getComment()) + "\n" +
-                        String.format(format, "Коментарий №2: ", workout.getRingWork()) + "\n" +
-                        String.format(format, "Коментарий №3: ", workout.getComment2()) + "\n";
+                        String.format(format, "Комментарий №1: ", workout.getComment()) + "\n" +
+                        String.format(format, "Комментарий №2: ", workout.getRingWork()) + "\n" +
+                        String.format(format, "Комментарий №3: ", workout.getComment2()) + "\n";
 
                 userStatus.saveUserStatusMap(chatId, EnumTelegramStatus.Expect);
                 break;
@@ -158,7 +176,7 @@ public class ParseMessageBot {
                 returnText = "Тренировка завершена за " + time + " минут. \n";
                 userStatus.saveUserStatusMap(chatId, EnumTelegramStatus.Expect);
 
-                workoutStatus.saveReplyKeyboardMarkupMap(chatId, keyboard.getKeyboard());
+                workoutStatus.deleteReplyKeyboardMarkupMap(chatId);
                 //Вернуть обычную клавиатуру
                 break;
             case ("AssignmentWorkout1"):
@@ -179,9 +197,62 @@ public class ParseMessageBot {
                 workoutStatus.saveReplyKeyboardMarkupMap(getChatIdNotStatus(chatId), keyboardEndWorkout.getKeyboard());
                 ///////////////////////////////////////////////Добавить клавиатуру с кнопкой "Конец тренировки" для getChatId(chatId)
                 break;
+            case ("AddExercisePictureName"):
+                exercisesStatus.saveexercisesStatusMap(chatId, new Exercises(message));
+                userStatus.saveUserStatusMap(chatId, EnumTelegramStatus.AddExercisePicture);
+
+                returnText = "Добавьте пояснение (картинка, видео, GIF-изображение)";
+                break;
+            case ("AddUsersInGroup"):
+                String statusAddedUser = usersController.controllerAddUserInGroup(chatId, message);
+                returnText = "Статус добавления пользователя: " + statusAddedUser;
+                userStatus.saveUserStatusMap(chatId, EnumTelegramStatus.Expect);
+                break;
         }
         return returnText;
     }
+
+    /*public String parseMessageStatus(String chatId, Video video, String status) throws IOException {
+        String returnText = "";
+        switch (status) {
+            case ("AddExercisePicture"):
+                Exercises exercises = exercisesStatus.getexceptionStatusMap(chatId);
+                exercises.setVideo(video);
+
+
+                returnText = "Поясняющее видео сохранено.\n";
+
+                break;
+        }
+        return returnText;
+    }*/
+
+    public String parseMessageStatus(String chatId, List<PhotoSize> photoSizes, String status) throws IOException {
+        String returnText = "";
+        switch (status) {
+            case ("AddExercisePicture"):
+                Exercises exercises = exercisesStatus.getexercisesStatusMap(chatId);
+                exercises.setPhotoSizes(photoSizes);
+                exercises.setFileId(Objects.requireNonNull(photoSizes.stream().max(Comparator.comparing(PhotoSize::getFileSize)).orElse(null)).getFileId());
+
+                exercisesController.controllerExercisesSave("video", exercisesStatus.getexercisesStatusMap(chatId).getFileId(), chatId, exercisesStatus.getexercisesStatusMap(chatId).getName());
+                returnText = "Поясняющее изображение сохранено.\n";
+                break;
+        }
+        return returnText;
+    }
+
+    public String parseMessageStatusPhoto(String chatId, String message) { //message - id который ранее указал пользователь (id упражнения к которому нужно пояснение)
+        return "УРААААААААААААА";
+    }
+
+    /*public String parseMessageStatusVideo(String chatId, String message) { //message - id который ранее указал пользователь (id упражнения к которому нужно пояснение)
+        switch (status) {
+            case ("SearchExercisePicture"):
+
+                break;
+        }
+    }*/
 
     public String getChatId(String chatId) {
         String responseChatId = "";
@@ -204,11 +275,13 @@ public class ParseMessageBot {
         return responseChatId;
     }
 
-    public ReplyKeyboardMarkup getReplyKeyboardMarkup(String chatId) {
+    public ReplyKeyboardMarkup getReplyKeyboardMarkup(String chatId) { //добавить запрос в БД, если пользователь тренер то вернуть его клаву, иначе обычную
         if (workoutStatus.isReplyKeyboardMarkupMap(chatId)) {
             return workoutStatus.getReplyKeyboardMarkupMap(chatId);
-        } else {
+        } else if (usersController.controllerFindIsTrener(chatId)) {
+            return keyboardTrener.getKeyboard();
+        } else
             return keyboard.getKeyboard();
-        }
     }
 }
+
