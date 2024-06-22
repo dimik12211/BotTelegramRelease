@@ -52,6 +52,10 @@ public class Keyboard {
             keyboardRow9.add(new KeyboardButton("Добавить пояснение к упражнению"));
             keyboardRows.add(keyboardRow9);
 
+            KeyboardRow keyboardRow10 = new KeyboardRow();
+            keyboardRow10.add(new KeyboardButton("Заполнить профиль"));
+            keyboardRows.add(keyboardRow10);
+
             replyKeyboardMarkup.setKeyboard(keyboardRows);
             return replyKeyboardMarkup;
         }catch (Exception e){

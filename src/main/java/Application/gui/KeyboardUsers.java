@@ -38,6 +38,10 @@ public class KeyboardUsers {
             keyboardRow6.add(new KeyboardButton("Посмотреть статистику тренировок"));
             keyboardRows.add(keyboardRow6);
 
+            KeyboardRow keyboardRow7 = new KeyboardRow();
+            keyboardRow7.add(new KeyboardButton("Заполнить профиль"));
+            keyboardRows.add(keyboardRow7);
+
             replyKeyboardMarkup.setKeyboard(keyboardRows);
             return replyKeyboardMarkup;
         } catch (Exception e) {

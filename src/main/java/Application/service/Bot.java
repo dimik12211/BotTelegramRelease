@@ -5,22 +5,17 @@ import Application.controller.PhoneNumberController;
 import Application.controller.UsersController;
 import Application.gui.Keyboard;
 import Application.service.statuses.EnumTelegramStatus;
-import Application.service.statuses.ExercisesStatus;
 import Application.service.statuses.UserStatus;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
-import org.telegram.telegrambots.meta.api.methods.send.SendVideo;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -66,7 +61,7 @@ public class Bot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         try {
-            if (firstStart) { //При каждом перезапуске приложения для всех зареганых ранее пользователей устанавливается статус ожидания
+            if (firstStart) {
                 setStatuses();
                 firstStart = false;
             }
